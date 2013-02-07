@@ -1,5 +1,6 @@
 import socket
 import select
+import ssl
 
 class ConnectionHandler(object):
     def __init__(self):
@@ -13,6 +14,8 @@ class ConnectionHandler(object):
     def connect(self, bot):
         try:
             bot.network.is_connected = True
+            if bot.network.ssl:
+                bot.network.socket = ssl.wrap_socket(bot.network.socket)
             bot.network.socket.connect((bot.network.host, bot.network.port))
             self.send(bot, "NICK {0}".format(bot.nick))
             self.send(bot, "USER {0} *** *** :{1}".format(bot.ident, bot.realname))
@@ -37,7 +40,9 @@ class ConnectionHandler(object):
         for bot in self.bots:
             if not bot.network.is_connected:
                 self.connect(bot)
+
         self.bots = [bot for bot in self.bots if bot.network.is_connected]
+
         while len(self.bots) > 0:
             _send = [bot for bot in self.bots if bot.network.sendbuffer != []]
 
