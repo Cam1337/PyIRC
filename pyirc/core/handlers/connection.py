@@ -12,22 +12,24 @@ class ConnectionHandler(object):
         self.bots.remove(bot)
     def connect(self, bot):
         try:
-            self.bot.network.socket.connect((bot.network.host, bot.network.port))
+            bot.network.socket.connect((bot.network.host, bot.network.port))
             self.send(bot, "NICK {0}".format(bot.nick))
             self.send(bot, "USER {0} *** *** :{1}".format(bot.ident, bot.realname))
-            self.bot.network.is_connected = True
-        except:
-            self.bot.network.is_connected = False
+            bot.network.is_connected = True
+        except Exception, e:
+            bot.network.is_connected = False
     def disconnect(self, bot):
         pass # to implement
     def send(self, bot, data):
-        if self.bot.network.is_connected:
+        if bot.network.is_connected:
             bot.senduffer.append("{0}\r\n".format(data))
+    def recv(self, bot)
     def mainloop(self):
         for bot in self.bots:
-            if not self.bot.network.is_connected:
+            if not bot.network.is_connected:
                 self.connect(bot)
-        self.bots = [bot for bot in self.bots if bot.is_connected]
+        print [bot.network.is_connected for bot in self.bots]
+        self.bots = [bot for bot in self.bots if bot.network.is_connected]
         while len(self.bots) > 0:
             _send = [bot.network for bot in self.bots if bot.sendbuffer != []]
             _nets  = [bot.network for bot in self.bots]
@@ -43,7 +45,7 @@ class ConnectionHandler(object):
             if _write:
                 for bot in _write:
                     for msg in bot.sendbuffer:
-                        bot.network.socket.send(bot, msg)
+                        bot.network.socket.send(msg)
 
             if _error:
                 for bot in _error:

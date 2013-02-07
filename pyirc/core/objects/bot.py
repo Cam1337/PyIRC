@@ -12,7 +12,9 @@ class IRCBot(object):
         self.password = password
         self.auth = (self.password != None)
         self.network = None
+
         self.sendbuffer = []
+        self.recvbuffer = []
 
         self.moduleHandler = modules.ModuleHandler(self)
         self.accessHandler = access.AccessHandler(self)
@@ -24,6 +26,3 @@ class IRCBot(object):
     def set_network(self, network):
         self.network = network
         self.network.socket.settimeout(network.timeout)
-
-    def fileno(self):
-        return self.socket.fileno()
