@@ -23,3 +23,9 @@ class IRCBot(object):
     def set_network(self, network):
         self.network = network
         self.network.socket.settimeout(network.timeout)
+
+    def send(self, data):
+        self.network.sendbuffer.append("{0}\r\n".format(data))
+
+    def fileno(self):
+        return self.network.socket.fileno()

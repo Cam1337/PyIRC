@@ -19,9 +19,6 @@ class Network(object):
 
         self.is_connected = False
 
-    def fileno(self):
-        return self.socket.fileno()
-
     def parse_protocol_string(self, protocol_string):
         pass
 
