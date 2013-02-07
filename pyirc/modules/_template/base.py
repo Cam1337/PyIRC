@@ -34,7 +34,7 @@ class BaseModule(object):
     def action(self, channel, data):
         self.bot.send("PRIVMSG {0} :\x01ACTION {1}\x01".format(channel, data))
     def notice(self, channel, data):
-        self.bot.send("NOTICE {0}: {1}".format(channel, data))
+        self.bot.send("NOTICE {0} :{1}".format(channel, data))
 
 class BaseConfiguration(object):
     def __init__(self, module):
