@@ -1,9 +1,13 @@
+from pyirc.core.handlers.logs import LogHandler
 import socket
 import select
 import ssl
 
 class ConnectionHandler(object):
     def __init__(self):
+        self.logger = LogHandler(__file__)
+        self.logger.log("Class Initialized `DataParser`")
+
         self.bots = []
         self.connections = []
 
@@ -12,6 +16,7 @@ class ConnectionHandler(object):
     def remove(self, bot):
         self.bots.remove(bot)
     def connect(self, bot):
+        self.logger.log("Connecting bot {0}".format(bot.nick), lt=1)
         try:
             bot.network.is_connected = True
             if bot.network.ssl:
@@ -40,7 +45,11 @@ class ConnectionHandler(object):
     def mainloop(self):
         for bot in self.bots:
             if not bot.network.is_connected:
-                self.connect(bot)
+                result = self.connect(bot)
+                if result:
+                    self.logger.log("Connected bot {0}".format(bot.nick), lt=1)
+                else:
+                    self.logger.log("Failed to connect bot {0}".format(bot.nick), lt=4)
 
         self.bots = [bot for bot in self.bots if bot.network.is_connected]
 
@@ -52,15 +61,16 @@ class ConnectionHandler(object):
             if _read:
                 for bot in _read:
                     recv = self.recv(bot)
+
                     for data in recv:
-                        print "<-- {0}".format(data)
                         bot.dataParser.parse(data)
 
             if _write:
                 for bot in _write:
                     for msg in bot.network.sendbuffer:
-                        print "--> {0} [{1}]".format(msg.strip(), msg.endswith("\r\n"))
+                        self.logger.log("Sending message '{0}'".format(msg), lt=3)
                         bot.network.socket.send(msg)
+                        self.logger.log("Removing '{0}' from sendbuffer".format(msg), lt=3)
                         bot.network.sendbuffer.remove(msg)
 
             if _error:

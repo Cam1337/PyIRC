@@ -3,7 +3,7 @@ from pyirc.core.handlers.logs import LogHandler
 class Message(object):
     def __init__(self, nick):
         self.logger = LogHandler(__file__)
-        self.logger.log("Class Initialized `message`")
+        self.logger.log("Class Initialized `Message`")
 
         self.bot_nick = nick
 

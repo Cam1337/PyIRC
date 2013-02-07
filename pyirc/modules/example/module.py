@@ -1,3 +1,4 @@
+from pyirc.core.handlers.logs import LogHandler
 from pyirc.modules._template.base import BaseModule
 from pyirc.modules._template.base import Keyword
 from configuration import Configuration

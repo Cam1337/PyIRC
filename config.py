@@ -1,3 +1,4 @@
+log_show = [0,1,2,3,4]
 # network configurations
 host = "irc.freenode.net"
 port = 6667

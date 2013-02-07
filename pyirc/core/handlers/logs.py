@@ -1,21 +1,17 @@
-#logger(ltype.ERR, __file__, line, tback, e)
-
-import inspect, os
-
-class ltype(object):
-    ERR = "Error"
-    LOG = "Log"
-    FER = "Fatal Error"
-    INF = "Info"
-    DBG = "Debug"
-
+import inspect
+import os
+import config
 
 class LogHandler(object):
     def __init__(self, file):
         self.file = file.split("pyirc")[1]
+        self.types = {0:"Log",1:"Info",2:"Error",3:"Debug",4:"Fatal Error"}
 
 
-    def log(self, m=None, ex=None, lt=ltype.LOG):
+    def log(self, m=None, lt=0, ex=None):
+        if lt not in config.log_show:
+            return
+        lt = self.types[lt]
         frame = inspect.getframeinfo(inspect.stack()[1][0])
         if m == None and ex == None:
             print "[{0}:{1}] Log Event".format(self.file, frame.lineno)
