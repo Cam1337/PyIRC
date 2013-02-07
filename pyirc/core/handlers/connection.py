@@ -23,7 +23,9 @@ class ConnectionHandler(object):
     def send(self, bot, data):
         if bot.network.is_connected:
             bot.senduffer.append("{0}\r\n".format(data))
-    def recv(self, bot)
+    def recv(self, bot):
+        data = bot.network.socket.recv(1024)
+        if self.bot.network.
     def mainloop(self):
         for bot in self.bots:
             if not bot.network.is_connected:
@@ -31,7 +33,7 @@ class ConnectionHandler(object):
         print [bot.network.is_connected for bot in self.bots]
         self.bots = [bot for bot in self.bots if bot.network.is_connected]
         while len(self.bots) > 0:
-            _send = [bot.network for bot in self.bots if bot.sendbuffer != []]
+            _send = [bot.network for bot in self.bots if bot.network.sendbuffer != []]
             _nets  = [bot.network for bot in self.bots]
 
             _read, _write, _error = select.select(_nets, _send, _nets, 5)
@@ -44,7 +46,7 @@ class ConnectionHandler(object):
 
             if _write:
                 for bot in _write:
-                    for msg in bot.sendbuffer:
+                    for msg in bot.network.sendbuffer:
                         bot.network.socket.send(msg)
 
             if _error:

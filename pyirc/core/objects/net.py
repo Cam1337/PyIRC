@@ -14,6 +14,9 @@ class Network(object):
 
         self.socket = socket.socket()
 
+        self.sendbuffer = []
+        self.recvbuffer = ""
+
         self.is_connected = False
 
     def fileno(self):

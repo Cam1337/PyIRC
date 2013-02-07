@@ -13,9 +13,6 @@ class IRCBot(object):
         self.auth = (self.password != None)
         self.network = None
 
-        self.sendbuffer = []
-        self.recvbuffer = []
-
         self.moduleHandler = modules.ModuleHandler(self)
         self.accessHandler = access.AccessHandler(self)
         self.eventHandler = event.EventHandler(self)
