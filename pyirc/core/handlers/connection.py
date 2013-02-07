@@ -30,6 +30,7 @@ class ConnectionHandler(object):
         data = bot.network.socket.recv(1024)
         if bot.network.recvbuffer != "":
             data = bot.network.recvbuffer + data
+            bot.network.recvbuffer = ""
         data = data.split("\r\n")
         if data[-1] != "":
             bot.network.recvbuffer = data[-1]
@@ -53,12 +54,12 @@ class ConnectionHandler(object):
                     recv = self.recv(bot)
                     for data in recv:
                         print "<-- {0}".format(data)
-                        #bot.dataParser.parse(data)
+                        bot.dataParser.parse(data)
 
             if _write:
                 for bot in _write:
                     for msg in bot.network.sendbuffer:
-                        print "--> {0}".format(msg.strip())
+                        print "--> {0} [{1}]".format(msg.strip(), msg.endswith("\r\n"))
                         bot.network.socket.send(msg)
                         bot.network.sendbuffer.remove(msg)
 

@@ -12,4 +12,4 @@ if __name__ == "__main__":
 
     connectionManager.add(ircbot)
 
-    # connectionManager.mainloop()
+    connectionManager.mainloop()

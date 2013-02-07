@@ -8,6 +8,7 @@ class Message(object):
         self.bot_nick = nick
 
         self.args         = []
+        self.argc        = len(self.args)
         self.line         = ""
         self.unparsedNick = ""
         self.nick         = ""
@@ -18,10 +19,14 @@ class Message(object):
         self.hostName     = ""
 
     def arg(self, argNum):
-        return self.args.get(argNum)
+        try:
+            return self.args[argNum]
+        except Exception, e:
+            return None
 
     def define(self, data):
         self.args = data.split()
+        self.argc = len(self.args)
         self.line = " ".join(self.args)
 
         try:

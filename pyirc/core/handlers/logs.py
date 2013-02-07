@@ -10,7 +10,7 @@ class ltype(object):
     DBG = "Debug"
 
 
-class logger(object):
+class LogHandler(object):
     def __init__(self, file):
         self.file = file.split("pyirc")[1]
 
