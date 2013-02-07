@@ -12,4 +12,5 @@ class ModuleHandler(object):
     def load_modules(self):
         ignore = ["__init__.py","__init__.pyc","_template"]
         modules = [f for f in os.listdir(self.module_path) if f not in ignore]
-        print modules
+
+    def load_module(self, module)
