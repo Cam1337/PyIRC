@@ -21,11 +21,11 @@ class ConnectionHandler(object):
             bot.network.is_connected = True
             if bot.network.ssl:
                 bot.network.socket = ssl.wrap_socket(bot.network.socket)
+
             bot.network.socket.connect((bot.network.host, bot.network.port))
             self.send(bot, "NICK {0}".format(bot.nick))
             self.send(bot, "USER {0} *** *** :{1}".format(bot.ident, bot.realname))
         except Exception, e:
-            print e
             bot.network.is_connected = False
     def disconnect(self, bot):
         pass # to implement
@@ -45,8 +45,8 @@ class ConnectionHandler(object):
     def mainloop(self):
         for bot in self.bots:
             if not bot.network.is_connected:
-                result = self.connect(bot)
-                if result:
+                self.connect(bot)
+                if bot.network.is_connected:
                     self.logger.log("Connected bot {0}".format(bot.nick), lt=1)
                 else:
                     self.logger.log("Failed to connect bot {0}".format(bot.nick), lt=4)
@@ -61,16 +61,16 @@ class ConnectionHandler(object):
             if _read:
                 for bot in _read:
                     recv = self.recv(bot)
-
                     for data in recv:
+                        self.logger.log("Received '{0}'".format(data.strip()), lt=3)
                         bot.dataParser.parse(data)
 
             if _write:
                 for bot in _write:
                     for msg in bot.network.sendbuffer:
-                        self.logger.log("Sending message '{0}'".format(msg), lt=3)
+                        self.logger.log("Sending message '{0}'".format(msg.strip()), lt=3)
                         bot.network.socket.send(msg)
-                        self.logger.log("Removing '{0}' from sendbuffer".format(msg), lt=3)
+                        self.logger.log("Removing '{0}' from sendbuffer".format(msg.strip()), lt=3)
                         bot.network.sendbuffer.remove(msg)
 
             if _error:

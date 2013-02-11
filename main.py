@@ -6,10 +6,10 @@ import pyirc.core.objects.net as net
 if __name__ == "__main__":
     ircbot = bot.IRCBot("PyIRC","pyirc","pyirc",None, ".")
 
-    ircbot.set_network(net.Network("irc.freenode.net",6697,["##camcam"],True))
+    ircbot.set_network(net.Network("irc.codetalk.io",6667,["#lobby"],False))
 
     connectionManager = connection.ConnectionHandler()
 
     connectionManager.add(ircbot)
 
-    # connectionManager.mainloop()
+    connectionManager.mainloop()
