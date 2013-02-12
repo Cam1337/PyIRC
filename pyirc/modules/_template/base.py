@@ -1,7 +1,7 @@
 from pyirc.core.handlers.logs import LogHandler
 
 class Keyword(object):
-    def __init__(self, value, prefix=None, index=None, isArg=False, isCommand=False, caseSensitive=False):
+    def __init__(self, value, index=None, prefix=None, isArg=False, isCommand=False, caseSensitive=False):
         self.value  = value
         self.prefix = prefix
 
@@ -11,7 +11,7 @@ class Keyword(object):
         self.caseSensitive = caseSensitive
 
     def compare(self, com_char, message):
-        if self.isArg and self.index:
+        if self.isArg and self.index != None:
             val = message.arg(self.index)
             sv = self.value
         if self.isCommand:
@@ -22,10 +22,11 @@ class Keyword(object):
         else:
             return val == sv
     def __repr__(self):
-        if self.isArg and self.index:
+        if self.isArg and self.index != None:
             return self.value
         if self.isCommand:
             return ".".join([self.prefix, self.value]).lower()
+        return "Unknown"
 
 class BaseModule(object):
     def __init__(self, bot, configuration):
