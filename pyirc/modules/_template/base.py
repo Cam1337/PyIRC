@@ -11,12 +11,14 @@ class Keyword(object):
         self.caseSensitive = caseSensitive
 
     def compare(self, com_char, message):
+        print message.arg(self.index)
         if self.isArg and self.index != None:
             val = message.arg(self.index)
             sv = self.value
         if self.isCommand:
             val = message.command
             sv = com_char + ".".join([self.prefix, self.value]).lower()
+        print sv, self.isCommand, self.value, message.line
         if not self.caseSensitive:
             return val.lower() == sv.lower()
         else:
@@ -42,14 +44,16 @@ class BaseModule(object):
         self.logger.log("on_load() for '{0}'".format(self.configuration.command_prefix), lt=3)
     def on_unload(self):
         self.logger.log("on_unload() for '{0}'".format(self.configuration.command_prefix), lt=3)
+    def send(self, data):
+        self.bot.send(data)
     def privmsg(self, channel, data):
-        self.logger.log("[PRIVMSG] Sending '{0}' to '{1}'".format(data, channel), lt=2)
+        self.logger.log("[PRIVMSG] Sending '{0}' to '{1}'".format(data, channel), lt=1)
         self.bot.send("PRIVMSG {0} :{1}".format(channel, data))
     def action(self, channel, data):
-        self.logger.log("[ACTION] Sending '{0}' to '{1}'".format(data, channel), lt=2)
+        self.logger.log("[ACTION] Sending '{0}' to '{1}'".format(data, channel), lt=1)
         self.bot.send("PRIVMSG {0} :\x01ACTION {1}\x01".format(channel, data))
     def notice(self, channel, data):
-        self.logger.log("[NOTICE] Sending '{0}' to '{1}'".format(data, channel), lt=2)
+        self.logger.log("[NOTICE] Sending '{0}' to '{1}'".format(data, channel), lt=1)
         self.bot.send("NOTICE {0} :{1}".format(channel, data))
 
 class BaseConfiguration(object):

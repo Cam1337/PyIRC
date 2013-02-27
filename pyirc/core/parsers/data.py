@@ -10,10 +10,6 @@ class DataParser(object):
         self.message = message.Message(self.bot.nick)
     def parse(self, msg):
         self.message.define(msg)
-        if self.message.arg(1) == "001":
-            self.bot.send("JOIN ##camcam")
-        if self.message.arg(0) == "PING":
-            self.bot.send("PONG :{0}".format(self.message.arg(1)[1:]))
         for module in self.bot.moduleHandler.modules:
             module = self.bot.moduleHandler.modules[module]
             for hook in module.hooks:

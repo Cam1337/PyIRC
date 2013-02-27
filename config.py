@@ -1,4 +1,4 @@
-log_show = [0,1,2,3,4]
+log_show = [3]
 # network configurations
 host = "irc.freenode.net"
 port = 6667
@@ -20,3 +20,8 @@ accesss = [
 # plugins
 dynamicPlugins = True
 plugins = []
+
+111
+101
+101
+= 11, 4
