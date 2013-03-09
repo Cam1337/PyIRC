@@ -8,6 +8,7 @@ class DataParser(object):
 
         self.bot = bot
         self.message = message.Message(self.bot.nick)
+
     def parse(self, msg):
         self.message.define(msg)
         for module in self.bot.moduleHandler.modules:

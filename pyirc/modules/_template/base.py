@@ -4,29 +4,33 @@ class Keyword(object):
     def __init__(self, value, index=None, prefix=None, isArg=False, isCommand=False, caseSensitive=False):
         self.value  = value
         self.prefix = prefix
-
         self.isArg = isArg
         self.index = index
         self.isCommand = isCommand
         self.caseSensitive = caseSensitive
 
     def compare(self, com_char, message):
-        print message.arg(self.index)
         if self.isArg and self.index != None:
             val = message.arg(self.index)
             sv = self.value
         if self.isCommand:
             val = message.command
-            sv = com_char + ".".join([self.prefix, self.value]).lower()
-        print sv, self.isCommand, self.value, message.line
+            if self.prefix:
+                sv = com_char + ".".join([self.prefix, self.value]).lower()
+            else:
+                sv = com_char + self.value.lower()
         if not self.caseSensitive and sv and val:
             return val.lower() == sv.lower()
         return val == sv
+
     def __repr__(self):
         if self.isArg and self.index != None:
             return self.value
         if self.isCommand:
-            return ".".join([self.prefix, self.value]).lower()
+            if self.prefix:
+                return ".".join([self.prefix, self.value]).lower()
+            else:
+                return self.value.lower()
         return "Unknown"
 
 class BaseModule(object):

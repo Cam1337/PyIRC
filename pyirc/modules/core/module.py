@@ -3,7 +3,7 @@ from pyirc.modules._template.base import BaseModule
 from pyirc.modules._template.base import Keyword
 from configuration import Configuration
 
-class Module(BaseModule):
+class Module(BaseModule): #CORE
     def __init__(self, bot):
         super(Module, self).__init__(bot, Configuration(self))
 
