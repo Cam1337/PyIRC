@@ -18,3 +18,6 @@ class DataParser(object):
                     if self.bot.accessHandler.get_access(self.message.nick) >= access:
                         if kw.compare(self.bot.command_char, self.message):
                             func(self.message)
+
+    def garbage(self):
+        pass

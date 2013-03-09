@@ -78,6 +78,13 @@ class ConnectionHandler(object):
                     self.disconnect(bot)
                     self.bots.remove(bot)
 
+
+            for bot in self.bots:
+                self.logger.log("Running garbage collection for {0}".format(bot), lt=1)
+                bot.eventHandler.check()
+                bot.dataParser.garbage()
+                bot.moduleHandler.garbage()
+
         for bot in self.bots:
             self.disconnect(bot)
 

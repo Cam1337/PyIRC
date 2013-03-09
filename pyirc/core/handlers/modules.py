@@ -8,6 +8,7 @@ class ModuleHandler(object):
         self.bot = bot
         self.modules = {}
         self.raw = {}
+        self.marked_for_unload = []
         self.module_path = os.path.abspath(__file__.replace(os.path.split(__file__)[1],"../../modules"))
 
         if load_on_init:
@@ -34,3 +35,7 @@ class ModuleHandler(object):
     def reload_module(self, name):
         self.unload_module(name)
         self.load_module(name)
+
+    def garbage(self):
+        for mod_name in self.marked_for_unload:
+            self.unload_module(mod_name)

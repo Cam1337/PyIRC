@@ -19,10 +19,9 @@ class Keyword(object):
             val = message.command
             sv = com_char + ".".join([self.prefix, self.value]).lower()
         print sv, self.isCommand, self.value, message.line
-        if not self.caseSensitive:
+        if not self.caseSensitive and sv and val:
             return val.lower() == sv.lower()
-        else:
-            return val == sv
+        return val == sv
     def __repr__(self):
         if self.isArg and self.index != None:
             return self.value

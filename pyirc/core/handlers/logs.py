@@ -1,6 +1,7 @@
 import inspect
 import os
 import config
+import blessings
 
 class LogHandler(object):
     def __init__(self, file):

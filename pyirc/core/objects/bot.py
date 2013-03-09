@@ -29,3 +29,6 @@ class IRCBot(object):
 
     def fileno(self):
         return self.network.socket.fileno()
+
+    def __str__(self):
+        return "{0}@{1}".format(self.nick, self.network.host)
