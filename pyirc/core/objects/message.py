@@ -26,7 +26,6 @@ class Message(object):
 
     def define(self, data):
         self.args = data.split()
-        self.argc = len(self.args)
         self.line = " ".join(self.args)
 
         try:
@@ -60,3 +59,5 @@ class Message(object):
             self.hostName = self.args[0].split("@")[1]
         except IndexError:
             self.hostName = ""
+
+        self.argc = len(self.commandArgs)

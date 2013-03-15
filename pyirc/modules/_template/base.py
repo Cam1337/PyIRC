@@ -1,13 +1,14 @@
 from pyirc.core.handlers.logs import LogHandler
 
 class Keyword(object):
-    def __init__(self, value, index=None, prefix=None, isArg=False, isCommand=False, caseSensitive=False):
+    def __init__(self, value, index=None, prefix=None, isArg=False, isCommand=False, caseSensitive=False, callback=None):
         self.value  = value
         self.prefix = prefix
         self.isArg = isArg
         self.index = index
         self.isCommand = isCommand
         self.caseSensitive = caseSensitive
+        self.callback = callback
 
     def compare(self, com_char, message):
         if self.isArg and self.index != None:

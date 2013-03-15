@@ -17,8 +17,7 @@ if __name__ == "__main__":
     tester.send("cam",".stats")
     tester.send("cam",".deal")
     tester.send("cam",".cards")
-    tester.send("cam",".play r 5")
-
+    tester.send("cam",".play wd4 g")
 
 
 
