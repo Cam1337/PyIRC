@@ -9,6 +9,7 @@ class Message(object):
 
         self.args         = []
         self.argc        = len(self.args)
+        self.command_argc = 0
         self.line         = ""
         self.unparsedNick = ""
         self.nick         = ""
@@ -60,4 +61,4 @@ class Message(object):
         except IndexError:
             self.hostName = ""
 
-        self.argc = len(self.commandArgs)
+        self.command_argc = len(self.commandArgs)

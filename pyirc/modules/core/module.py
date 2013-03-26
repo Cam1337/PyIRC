@@ -8,7 +8,7 @@ class Module(BaseModule): #CORE
         super(Module, self).__init__(bot, Configuration(self))
 
         self.hook(Keyword("test", isCommand=True), self.hook_test, 0, 0)
-        self.hook(Keyword("ping", index=0, isArg=True), self.hook_ping, 1, 0)
+        self.hook(Keyword("ping", index=0, isArg=True), self.hook_ping, 0, 0)
         self.hook(Keyword("ping",isCommand=True), self.hook_user_ping, 0, 0)
         self.hook(Keyword("001", index=1, isArg=True), self.hook_001, 1, 0)
 

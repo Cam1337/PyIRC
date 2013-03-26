@@ -15,10 +15,13 @@ class DataParser(object):
             module = self.bot.moduleHandler.modules[module]
             for hook in module.hooks:
                 kw, func, argc, access = hook
-                if argc <= self.message.argc:
+                if argc <= self.message.command_argc:
                     if self.bot.accessHandler.get_access(self.message.nick) >= access:
                         if kw.compare(self.bot.command_char, self.message):
-                            func(self.message)
+                            try:
+                                func(self.message)
+                            except Exception, e:
+                                print "\n\n", e, func, "\n\n"
 
     def garbage(self):
         pass

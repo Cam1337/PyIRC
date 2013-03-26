@@ -51,10 +51,9 @@ class TestHandler(object):
         self.message.define(data_str)
 
         self.pseudo_bot._print(self.message.nick, self.message.line, self.channel)
-
         for hook in self.module.hooks:
             kw, func, argc, access = hook
-            if argc <= self.message.argc:
+            if argc <= self.message.command_argc:
                 if self.access_func(self.message.nick) >= access:
                     if kw.compare(self.com_char, self.message):
                         retval = func(self.message)

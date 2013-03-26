@@ -21,11 +21,11 @@ class ConnectionHandler(object):
             bot.network.is_connected = True
             if bot.network.ssl:
                 bot.network.socket = ssl.wrap_socket(bot.network.socket)
-
             bot.network.socket.connect((bot.network.host, bot.network.port))
             self.send(bot, "NICK {0}".format(bot.nick))
             self.send(bot, "USER {0} *** *** :{1}".format(bot.ident, bot.realname))
         except Exception, e:
+            print e
             bot.network.is_connected = False
     def disconnect(self, bot):
         pass # to implement
