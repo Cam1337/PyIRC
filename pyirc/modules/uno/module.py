@@ -277,11 +277,12 @@ class Module(BaseModule): #UNO
                 self.game.next_player(card.offset)
         else:
             self.game.next_player(card.offset)
-        self.privmsg(message.location, "Top card is now {0}, it is {1}'s turn".format(self.game.current_card, self.game.current_player))
-        self.notice(self.game.current_player, "Cards: {0}".format(self.game.current_player.get_cards()))
-        card_player.drop_card(card)
         if len(card_player.cards) == 0:
             self.privmsg(message.location, "Game over! {0} has won!!".format(card_player))
             self.game.reset()
+            return
+        self.privmsg(message.location, "Top card is now {0}, it is {1}'s turn".format(self.game.current_card, self.game.current_player))
+        self.notice(self.game.current_player, "Cards: {0}".format(self.game.current_player.get_cards()))
+        card_player.drop_card(card)
         if len(card_player.cards == 1):
             self.privmsg(message.location, "{0} has 1 card left!!".format(card_player))
