@@ -1,8 +1,8 @@
 from pyirc.core.handlers.logs import LogHandler
 from pyirc.modules._template.base import BaseModule, Keyword
-from configuration import Configuration
 from pyirc.core import utils
 import random
+
 
 class Card(object):
     def __init__(self,value,color):
@@ -13,6 +13,8 @@ class Card(object):
         self.value = value.lower()
         self.is_wild = self.value == "wd4" or self.value == "w"
         self.offset = self.get_offset()
+    def colorize(self):
+        return utils.text_color("[{0}]".format(self.value), self.color, utils.uno_text_color_lookup)
     def get_offset(self):
         if self.value in "0123456789w":
             return 1
@@ -56,9 +58,7 @@ class Player(object):
                 self.cards.remove(c)
 
     def get_cards(self,offset=0, c=None):
-        if not c:
-            c = self.cards
-        return ",".join(["[{0}:{1}]".format(c.color or "*", c.value.upper()) for c in c[offset:]])
+        return " ".join([item.colorize() for item in (c or self.cards)[offset:]])
 
 
 class Game(object):
@@ -92,7 +92,6 @@ class Game(object):
     def dealall(self, count):
         for player in self.players:
             player.draw(count)
-            player.cards.append(Card("8","r"))
 
     def assemble_deck(self):
         colors, faces, specials, deck = ["r","b","g","y"], ["0","1","2","3","4","5","6","7","8","9","s","r","d2"], ["W","WD4"], []
@@ -140,8 +139,8 @@ class Game(object):
 
 
 class Module(BaseModule): #UNO
-    def __init__(self, bot):
-        super(Module, self).__init__(bot, Configuration(self))
+    def __init__(self, bot, configuration):
+        super(Module, self).__init__(bot, configuration(self))
 
         # k, f, argc, axx
         self.hook(Keyword("uno",isCommand=True), self.hook_uno, 0, 0)
@@ -153,6 +152,7 @@ class Module(BaseModule): #UNO
         self.hook(Keyword("play",isCommand=True), self.hook_play, 2, 0)
 
         self.game = Game()
+
 
 
     def privmsg_alert(self, message, gr=False, gd=False):
@@ -211,7 +211,7 @@ class Module(BaseModule): #UNO
                 self.game.history.append(random.choice(self.game.cards))
                 while self.game.history[-1].is_wild:
                     self.game.history[-1] = random.choice(self.game.cards)
-                self.privmsg(message.location, "The top card is {0} and it is {1}'s turn!".format(self.game.history[-1], self.game.current_player))
+                self.privmsg(message.location, "The top card is {0} and it is {1}'s turn!".format(self.game.history[-1].colorize(), self.game.current_player))
             else:
                 self.privmsg(message.location, "Not enough players! Two or more are needed.")
 
@@ -224,7 +224,7 @@ class Module(BaseModule): #UNO
             card_player = self.game.get_player(message.nick)
             if self.game.current_player == card_player:
                 drawn = card_player.draw(1)
-                self.notice(card_player, "New cards: {0}".format(drawn))
+                self.notice(card_player, "New cards: {0}".format(card_player.get_cards(-1)))
             else:
                 self.privmsg(message.location, "Sorry, it's not your turn")
 
@@ -247,7 +247,7 @@ class Module(BaseModule): #UNO
                         self.privmsg(message.location, "{0}, you do not have that card".format(message.nick))
                 else:
                     if card == "INVALID" or not card:
-                        self.privmsg(message.location, "{0}, that is not a valid card to play.".format(message.nick))
+                        self.privmsg(message.location, "{0}, that is not a valid card to play, use .play <color> <value> or .play <wild> <color>".format(message.nick))
             else:
                 if card_player:
                     self.privmsg(message.location, "{0}, it is not your turn".format(message.nick))
@@ -281,8 +281,8 @@ class Module(BaseModule): #UNO
             self.privmsg(message.location, "Game over! {0} has won!!".format(card_player))
             self.game.reset()
             return
-        self.privmsg(message.location, "Top card is now {0}, it is {1}'s turn".format(self.game.current_card, self.game.current_player))
+        self.privmsg(message.location, "Top card is now {0}, it is {1}'s turn".format(self.game.current_card.colorize(), self.game.current_player))
         self.notice(self.game.current_player, "Cards: {0}".format(self.game.current_player.get_cards()))
         card_player.drop_card(card)
-        if len(card_player.cards == 1):
+        if len(card_player.cards) == 1:
             self.privmsg(message.location, "{0} has 1 card left!!".format(card_player))
