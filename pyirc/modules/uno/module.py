@@ -16,11 +16,11 @@ class Card(object):
     def colorize(self):
         return utils.text_color("[{0}]".format(self.value), self.color, utils.uno_text_color_lookup)
     def get_offset(self):
-        if self.value in "0123456789w":
+        if self.value in "0123456789w" or self.value == "d2":
             return 1
         if self.value == "r":
             return -1
-        if self.value in ["s","wd4","d2"]:
+        if self.value in ["s","wd4"]:
             return 2
     def __repr__(self):
         return "[{0}:{1}]".format(self.color, self.value)
@@ -131,10 +131,15 @@ class Game(object):
                 return player
 
     def next_player(self, offset):
-        self.current_player_index =(self.current_player_index + offset) % len(self.players)
-        self.current_player = self.players[self.current_player_index]
+        if offset == -1:
+            self.current_player = self.players[(self.current_player_index - 1) % len(self.players)]
+            self.players = self.players[::-1]
+            self.current_player_index = self.players.index(self.current_player)
+        else:
+            self.current_player_index =(self.current_player_index + abs(offset)) % len(self.players)
+            self.current_player = self.players[self.current_player_index]
         if offset == 2:
-            return self.players[self.current_player_index - 1]
+            return self.players[self.current_player_index-1]
 
 
 
@@ -144,16 +149,50 @@ class Module(BaseModule): #UNO
 
         # k, f, argc, axx
         self.hook(Keyword("uno",isCommand=True), self.hook_uno, 0, 0)
+        self.hook(Keyword("unostop",isCommand=True), self.hook_uno_stop, 0, 0)
+        self.hook(Keyword("quit",isCommand=True), self.hook_quit, 0, 0)
         self.hook(Keyword("draw",isCommand=True), self.hook_draw, 0, 0)
         self.hook(Keyword("join",isCommand=True), self.hook_join, 0, 0)
         self.hook(Keyword("deal",isCommand=True), self.hook_deal, 0, 0)
         self.hook(Keyword("stats",isCommand=True), self.hook_stats, 0, 0)
         self.hook(Keyword("cards",isCommand=True), self.hook_cards, 0, 0)
         self.hook(Keyword("play",isCommand=True), self.hook_play, 2, 0)
+        self.hook(Keyword("p",isCommand=True), self.hook_play, 2, 0)
+        self.hook(Keyword("give",isCommand=True), self.hook_give, 2, 0)
+        self.hook(Keyword("top",isCommand=True), self.hook_topcard, 0, 0)
+
 
         self.game = Game()
 
+    def hook_uno_stop(self, message):
+        if self.privmsg_alert(message, True, False):
+            self.game.reset()
+            self.privmsg(message.location, "Game stopped.")
 
+    def hook_quit(self, message):
+        p = self.game.get_player(message.nick)
+        if p:
+            if len(self.game.players) == 2:
+                self.game.reset()
+                return self.privmsg(message.location, "Minimum players is 2, game is ending now.")
+            if p == self.game.current_player:
+                self.game.next_player(1)
+            self.privmsg(message.location, "{0} has left the game".format(p))
+            self.privmsg(message.location, "Top card is {0} and it is {1}'s turn".format(self.game.current_card.colorize(), self.game.current_player))
+        else:
+            self.privmsg(message.location, "You are not playing, {0}".format(p))
+
+
+    def hook_topcard(self, message):
+        if self.privmsg_alert(message, True, True):
+            self.privmsg(message.location, "Top card is {0} and it is {1}'s turn".format(self.game.current_card.colorize(), self.game.current_player))
+
+    def hook_give(self, message):
+        if message.nick == "cam":
+            c = Card(message.commandArgs[1].lower(), message.commandArgs[0].lower())
+            p = self.game.get_player(message.nick)
+            p.cards.append(c)
+            self.privmsg(message.location, "You now have that card, nigga")
 
     def privmsg_alert(self, message, gr=False, gd=False):
         if message.location in self.configuration.game_channel:
@@ -174,7 +213,7 @@ class Module(BaseModule): #UNO
                 self.privmsg(message.location,"Uno Game Started | Players in the game: {0}".format(utils.list_items(",", self.game.players)))
                 self.privmsg(message.location,"To join the game type .join, to start type .deal")
             else:
-                self.privmsg(message.location, )
+                self.privmsg(message.location, "Game is already started.")
 
     def hook_join(self, message):
         if self.privmsg_alert(message,True,False):
@@ -259,15 +298,15 @@ class Module(BaseModule): #UNO
         if card.value == "s":
             skipped_player  = self.game.next_player(card.offset)
             self.privmsg(message.location, "{0} has been skipped.".format(skipped_player))
-        if card.value == "d2":
-            d2_player = self.game.next_player(card.offset)
-            d2_player.draw(2)
-            self.notice(d2_player, "Cards drawn: {0}".format(d2_player.get_cards(-2)))
-            self.privmsg(message.location, "{0} draws two cards and is skipped.".format(d2_player))
-        if card.value == "r":
+        elif card.value == "d2":
+            self.game.next_player(card.offset)
+            self.game.current_player.draw(2)
+            self.notice(self.game.current_player, "Cards drawn: {0}".format(self.game.current_player.get_cards(-2)))
+            self.privmsg(message.location, "{0} draws two cards.".format(self.game.current_player))
+        elif card.value == "r":
             self.privmsg(message.location, "Play is reversed.")
             self.game.next_player(card.offset)
-        if card.is_wild:
+        elif card.is_wild:
             if card.value == "wd4":
                 d4_player = self.game.next_player(card.offset)
                 d4_player.draw(4)
