@@ -271,7 +271,7 @@ class Module(BaseModule): #UNO
         if self.privmsg_alert(message, True, True):
             card_player = self.game.get_player(message.nick)
             if self.game.current_player == card_player:
-                is_valid, card = self.game.sanitize_play(message.commandArgs[0].lower(), message.commandArgs[1].lower())
+                is_valid, card = self.game.sanitize_play(message.commandArgs[0].lower()[0], message.commandArgs[1].lower())
                 current_card = self.game.history[-1]
                 if is_valid:
                     if self.game.current_player.has_card(card):
