@@ -211,7 +211,7 @@ class Module(BaseModule): #UNO
         if self.privmsg_alert(message):
             if not self.game.is_running:
                 self.game.is_running = True
-                self.game.add_player(message.nick)
+                self.game.add_player(message.unparsedNick)
                 self.privmsg(message.location,"Uno Game Started | Players in the game: {0}".format(utils.list_items(",", self.game.players)))
                 self.privmsg(message.location,"To join the game type .join, to start type .deal")
             else:
@@ -220,7 +220,7 @@ class Module(BaseModule): #UNO
     def hook_join(self, message):
         if self.privmsg_alert(message,True,False):
             if not self.game.is_dealt:
-                added = self.game.add_player(message.nick)
+                added = self.game.add_player(message.unparsedNick)
                 if added:
                     self.privmsg(message.location,"{0} has joined the game!".format(message.nick))
                 else:
