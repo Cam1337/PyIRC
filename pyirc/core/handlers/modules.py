@@ -60,6 +60,8 @@ class ModuleHandler(object):
         for mod in self.to_load:
             self.load_module_actual(mod)
         self.to_unload, self.to_load = [], []
+        for module in self.modules:
+            self.modules[module].garbage()
 
     def error_clean(self, err):
         return err.split(os.path.split(os.path.split(self.module_path)[0])[0])[1][1:]

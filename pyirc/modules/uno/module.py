@@ -9,7 +9,7 @@ class Card(object):
         if not color:
             self.color = None
         else:
-            self.color = color.lower()
+            self.color = color.lower()[0]
         self.value = value.lower()
         self.is_wild = self.value == "wd4" or self.value == "w"
         self.offset = self.get_offset()

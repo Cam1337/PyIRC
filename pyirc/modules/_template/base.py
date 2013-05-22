@@ -59,6 +59,8 @@ class BaseModule(object):
     def notice(self, channel, data):
         self.logger.log("[NOTICE] Sending '{0}' to '{1}'".format(data, channel), lt=1)
         self.bot.send("NOTICE {0} :{1}".format(channel, data))
+    def garbage(self):
+        pass
 
 class BaseConfiguration(object):
     def __init__(self, module):
