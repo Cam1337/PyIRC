@@ -22,7 +22,7 @@ class Main(object):
 
     def run_bot(self):
         ircbot = bot.IRCBot("PyIRCu","pyirc","pyirc",None, ".")
-        ircbot.set_network(net.Network("irc.freenode.net",6667,["#botters-test"],False))
+        ircbot.set_network(net.Network("irc.p2p-network.net",6667,["#scenetime"],False))
         connectionManager = connection.ConnectionHandler()
         connectionManager.add(ircbot)
         connectionManager.mainloop()

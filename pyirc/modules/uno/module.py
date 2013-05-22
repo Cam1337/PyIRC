@@ -172,15 +172,17 @@ class Module(BaseModule): #UNO
     def hook_quit(self, message):
         p = self.game.get_player(message.nick)
         if p:
-            if len(self.game.players) == 2:
+            if len(self.game.players) <= 2:
                 self.game.reset()
                 return self.privmsg(message.location, "Minimum players is 2, game is ending now.")
             if p == self.game.current_player:
                 self.game.next_player(1)
             self.privmsg(message.location, "{0} has left the game".format(p))
-            self.privmsg(message.location, "Top card is {0} and it is {1}'s turn".format(self.game.current_card.colorize(), self.game.current_player))
+            if self.game.is_dealt:
+                self.privmsg(message.location, "Top card is {0} and it is {1}'s turn".format(self.game.current_card.colorize(), self.game.current_player))
+            del self.game.players[self.game.players.index(p)]
         else:
-            self.privmsg(message.location, "You are not playing, {0}".format(p))
+            self.privmsg(message.location, "You are not playing, {0}".format(message.nick))
 
 
     def hook_topcard(self, message):
