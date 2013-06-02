@@ -70,7 +70,7 @@ class ConnectionHandler(object):
                     for msg in bot.network.sendbuffer:
                         self.logger.log("Sending message '{0}'".format(msg.strip()), lt=3)
                         bot.network.socket.send(msg)
-                        self.logger.log("Removing '{0}' from sendbuffer".format(msg.strip()), lt=3)
+                        self.logger.log("Removing '{0}' from sendbuffer".format(msg.strip()), lt=5)
                     bot.network.sendbuffer = []
 
             if _error:

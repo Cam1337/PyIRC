@@ -16,12 +16,14 @@ class DataParser(object):
 
     def parse(self, msg):
         self.message.define(msg)
+        nick_access = self.bot.accessHandler.get_access(self.message.unparsedNick)
+        
         for module in self.bot.moduleHandler.modules:
             module = self.bot.moduleHandler.modules[module]
             for hook in module.hooks:
                 kw, func, argc, access = hook
                 if argc <= self.message.command_argc:
-                    if self.bot.accessHandler.get_access(self.message.nick) >= access:
+                    if  nick_access >= access:
                         if kw.compare(self.bot.command_char, self.message):
                             try:
                                 func(self.message)
