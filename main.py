@@ -10,19 +10,20 @@ class Main(object):
 
     def test_uno(self):
         from pyirc.modules.uno import module as uno_module
-        tester = moduleTester.TestHandler(uno_module, com_char=".", bot_nick="TestBot", channel="#uno")
+        from pyirc.modules.uno import configuration as uno_config
+        tester = moduleTester.TestHandler(uno_module, uno_config, com_char=".", bot_nick="TestBot", channel="##camcam")
         tester.send("cam",".uno")
         tester.send("josh",".join")
         tester.send("lee",".join")
         tester.send("cam",".stats")
         tester.send("cam",".deal")
-        tester.send("cam",".cards")
-        tester.send("cam",".play r 8")
-        tester.send("cam",".cards")
+        tester.send("cam",".draw")
+        tester.send("cam",".draw")
+        tester.send("cam",".draw")
 
     def run_bot(self):
         ircbot = bot.IRCBot("PyIRCu","pyirc","pyirc",None, ".")
-        ircbot.set_network(net.Network("irc.p2p-network.net",6667,["#scenetime"],False))
+        ircbot.set_network(net.Network("irc.indymedia.org",6667,["#ugm"],False))
         connectionManager = connection.ConnectionHandler()
         connectionManager.add(ircbot)
         connectionManager.mainloop()
@@ -30,5 +31,5 @@ class Main(object):
 
 if __name__ == "__main__":
     m = Main()
-    m.run_bot()
+    m.test_uno()
     # m.test_uno()

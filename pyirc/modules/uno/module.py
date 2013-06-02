@@ -37,13 +37,16 @@ class Player(object):
         self.nick = nick
         self.cards = []
         self.all_cards = all_cards
+        self.draw_count = 0
     def __str__(self):
         return self.nick
     def has_card(self, other_card):
         for card in self.cards:
             if card.compare(other_card):
                 return True
-    def draw(self, number):
+    def draw(self, number, dc=False):
+        if dc:
+            self.draw_count += 1
         newCards = []
         for i in xrange(number):
             choice = random.choice(self.all_cards)
@@ -170,7 +173,7 @@ class Module(BaseModule): #UNO
             self.privmsg(message.location, "Game stopped.")
 
     def hook_quit(self, message):
-        p = self.game.get_player(message.nick)
+        p = self.game.get_player(message.unparsedNick)
         if p:
             if len(self.game.players) <= 2:
                 self.game.reset()
@@ -182,7 +185,7 @@ class Module(BaseModule): #UNO
                 self.privmsg(message.location, "Top card is {0} and it is {1}'s turn".format(self.game.current_card.colorize(), self.game.current_player))
             del self.game.players[self.game.players.index(p)]
         else:
-            self.privmsg(message.location, "You are not playing, {0}".format(message.nick))
+            self.privmsg(message.location, "You are not playing, {0}".format(message.unparsedNick))
 
 
     def hook_topcard(self, message):
@@ -190,9 +193,9 @@ class Module(BaseModule): #UNO
             self.privmsg(message.location, "Top card is {0} and it is {1}'s turn".format(self.game.current_card.colorize(), self.game.current_player))
 
     def hook_give(self, message):
-        if message.nick == "cam":
+        if message.unparsedNick == "cam":
             c = Card(message.commandArgs[1].lower(), message.commandArgs[0].lower())
-            p = self.game.get_player(message.nick)
+            p = self.game.get_player(message.unparsedNick)
             p.cards.append(c)
             self.privmsg(message.location, "You now have that card, nigga")
 
@@ -200,12 +203,12 @@ class Module(BaseModule): #UNO
         if message.location in self.configuration.game_channel:
             if gr:
                 if not self.game.is_running:
-                    return self.privmsg(message.location, "{0}, no current game, type .uno to begin one!".format(message.nick))
+                    return self.privmsg(message.location, "{0}, no current game, type .uno to begin one!".format(message.unparsedNick))
             if gd:
                 if not self.game.is_dealt:
-                    return self.privmsg(message.location, "{0}, the cards have not been dealt, type .deal to deal the cards.".format(message.nick))
+                    return self.privmsg(message.location, "{0}, the cards have not been dealt, type .deal to deal the cards.".format(message.unparsedNick))
             return True
-        self.notice(message.nick, "Please send all commands to me in the channel {0}".format(self.configuration.game_channel))
+        self.notice(message.unparsedNick, "Please send all commands to me in the channel {0}".format(self.configuration.game_channel))
 
     def hook_uno(self, message):
         if self.privmsg_alert(message):
@@ -222,11 +225,11 @@ class Module(BaseModule): #UNO
             if not self.game.is_dealt:
                 added = self.game.add_player(message.unparsedNick)
                 if added:
-                    self.privmsg(message.location,"{0} has joined the game!".format(message.nick))
+                    self.privmsg(message.location,"{0} has joined the game!".format(message.unparsedNick))
                 else:
-                    self.privmsg(message.location,"{0}, you are already playing.".format(message.nick))
+                    self.privmsg(message.location,"{0}, you are already playing.".format(message.unparsedNick))
             else:
-                self.privmsg(message.location, "{0}, there is already a game running, please wait for the next one".format(message.nick))
+                self.privmsg(message.location, "{0}, there is already a game running, please wait for the next one".format(message.unparsedNick))
 
     def hook_stats(self, message):
         if self.privmsg_alert(message,True,False):
@@ -258,20 +261,26 @@ class Module(BaseModule): #UNO
 
     def hook_cards(self, message):
         if self.privmsg_alert(message, True, True):
-            self.send_cards(message.nick)
+            self.send_cards(message.unparsedNick)
 
     def hook_draw(self, message):
         if self.privmsg_alert(message, True, True):
-            card_player = self.game.get_player(message.nick)
+            card_player = self.game.get_player(message.unparsedNick)
             if self.game.current_player == card_player:
-                drawn = card_player.draw(1)
-                self.notice(card_player, "New cards: {0}".format(card_player.get_cards(-1)))
+                drawn = card_player.draw(1, True)
+                if card_player.draw_count >= 3:
+                    card_player.draw_count = 0
+                    self.privmsg(message.location, "Player {0} was skipped after drawing 3 unplayable cards.".format(self.game.current_player))
+                    self.game.next_player(1)
+                    self.privmsg(message.location, "The top card is {0} and it is {1}'s turn!".format(self.game.history[-1].colorize(), self.game.current_player))
+                else:
+                    self.notice(card_player, "New cards: {0}".format(card_player.get_cards(-1)))
             else:
                 self.privmsg(message.location, "Sorry, it's not your turn")
 
     def hook_play(self, message):
         if self.privmsg_alert(message, True, True):
-            card_player = self.game.get_player(message.nick)
+            card_player = self.game.get_player(message.unparsedNick)
             if self.game.current_player == card_player:
                 is_valid, card = self.game.sanitize_play(message.commandArgs[0].lower()[0], message.commandArgs[1].lower())
                 current_card = self.game.history[-1]
@@ -283,17 +292,17 @@ class Module(BaseModule): #UNO
                             if current_card.value == card.value or current_card.color == card.color:
                                 self.play_logic(message, current_card, card, card_player)
                             else:
-                                self.privmsg(message.location, "That card does not play on {0}".format(current_card))
+                                self.privmsg(message.location, "That card does not play on {0}".format(current_card.colorize()))
                     else:
-                        self.privmsg(message.location, "{0}, you do not have that card".format(message.nick))
+                        self.privmsg(message.location, "{0}, you do not have that card".format(message.unparsedNick))
                 else:
                     if card == "INVALID" or not card:
-                        self.privmsg(message.location, "{0}, that is not a valid card to play, use .play <color> <value> or .play <wild> <color>".format(message.nick))
+                        self.privmsg(message.location, "{0}, that is not a valid card to play, use .play <color> <value> or .play <wild> <color>".format(message.unparsedNick))
             else:
                 if card_player:
-                    self.privmsg(message.location, "{0}, it is not your turn".format(message.nick))
+                    self.privmsg(message.location, "{0}, it is not your turn".format(message.unparsedNick))
                 else:
-                    self.privmsg(message.location, "{0}, you are not playing.".format(message.nick))
+                    self.privmsg(message.location, "{0}, you are not playing.".format(message.unparsedNick))
 
     def play_logic(self, message, current_card, card, card_player):
         self.game.history.append(card)

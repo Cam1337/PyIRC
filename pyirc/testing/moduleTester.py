@@ -19,7 +19,7 @@ class PseudoBot(object):
 
 
 class TestHandler(object):
-    def __init__(self, module, com_char, bot_nick, channel, access_func=lambda a: 1):
+    def __init__(self, module, config, com_char, bot_nick, channel, access_func=lambda a: 1):
         self.terminal = blessings.Terminal()
 
         self.pseudo_bot = PseudoBot(bot_nick, channel, self.terminal)
@@ -30,11 +30,11 @@ class TestHandler(object):
         self.com_char = com_char
         self.access_func = access_func
 
-        self.initialize(module)
+        self.initialize(module, config)
 
 
-    def initialize(self, module):
-        self.module = module.Module(self.pseudo_bot)
+    def initialize(self, module, config):
+        self.module = module.Module(self.pseudo_bot, config.Configuration)
 
     def match(self, func, retval, access, argc, kw):
         margc, argc = argc
