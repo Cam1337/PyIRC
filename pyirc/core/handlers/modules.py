@@ -1,7 +1,6 @@
 from pyirc.core.handlers.logs import LogHandler
 import os
 
-f = "core"
 
 class ModuleHandler(object):
     def __init__(self, bot, load_on_init=True):
@@ -40,15 +39,15 @@ class ModuleHandler(object):
 
     def unload_module_actual(self, name):
         if self.modules.get(name,None):
-            self.modules[name].on_unload()
-            del self.modules[name]
-            del self.raw[name]
+            if  self.modules[name].on_unload():
+                del self.modules[name]
+                del self.raw[name]
 
     def reload_module(self, name):
-        reload(self.raw[name].module)
-        reload(self.raw[name].configuration)
-        self.modules[name] = self.raw[name].module.Module(self.bot, self.raw[name].configuration.Configuration)
-        self.modules[name].on_load()
+        if self.modules[name].on_reload():
+            reload(self.raw[name].module)
+            reload(self.raw[name].configuration)
+            self.modules[name] = self.raw[name].module.Module(self.bot, self.raw[name].configuration.Configuration)
 
     def reload_all(self):
         for module in self.modules:

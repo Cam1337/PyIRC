@@ -46,8 +46,13 @@ class BaseModule(object):
         self.hooks.append((keyword, function, argc, access))
     def on_load(self):
         self.logger.log("on_load() for '{0}'".format(self.configuration.command_prefix), lt=3)
+        return True
     def on_unload(self):
         self.logger.log("on_unload() for '{0}'".format(self.configuration.command_prefix), lt=3)
+        return True
+    def on_reload(self):
+        self.logger.log("on_reload() for '{0}'".format(self.configuration.command_prefix), lt=3)
+        return True
     def send(self, data):
         self.bot.send(data)
     def privmsg(self, channel, data):
