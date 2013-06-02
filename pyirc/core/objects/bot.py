@@ -2,6 +2,7 @@ import pyirc.core.handlers.access as access
 import pyirc.core.handlers.event as event
 import pyirc.core.handlers.modules as modules
 import pyirc.core.parsers.data as data
+import pyirc.core.parsers.web as web
 
 
 class IRCBot(object):
@@ -17,6 +18,7 @@ class IRCBot(object):
         self.accessHandler = access.AccessHandler(self)
         self.eventHandler = event.EventHandler(self)
         self.dataParser = data.DataParser(self)
+        self.webParser = web.WebParser(self)
 
         self.command_char = comchar
 

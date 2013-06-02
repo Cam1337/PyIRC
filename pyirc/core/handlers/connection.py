@@ -83,6 +83,8 @@ class ConnectionHandler(object):
                 self.logger.log("Running garbage collection for {0}".format(bot), lt=1)
                 bot.eventHandler.check()
                 bot.dataParser.garbage()
+                bot.webParser.garbage()
+                bot.accessHandler.garbage()
                 bot.moduleHandler.garbage()
 
         for bot in self.bots:
