@@ -130,7 +130,7 @@ class Game(object):
 
     def get_player(self, nick):
         for player in self.players:
-            if player.nick == nick:
+            if player.nick.lower() == nick.lower():
                 return player
 
     def next_player(self, offset):
