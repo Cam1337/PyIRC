@@ -22,8 +22,8 @@ class Main(object):
         tester.send("cam",".draw")
 
     def run_bot(self):
-        ircbot = bot.IRCBot("PyIRCu","pyirc","pyirc",None, ".")
-        ircbot.set_network(net.Network("irc.indymedia.org",6667,["#ugm"],False))
+        ircbot = bot.IRCBot("pircuno","pyirc","pyirc",None, ".")
+        ircbot.set_network(net.Network("irc.codetalk.io",6667,["#lobby"],False))
         connectionManager = connection.ConnectionHandler()
         connectionManager.add(ircbot)
         connectionManager.mainloop()
@@ -31,5 +31,5 @@ class Main(object):
 
 if __name__ == "__main__":
     m = Main()
-    m.test_uno()
     # m.test_uno()
+    m.run_bot()
