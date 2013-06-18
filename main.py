@@ -28,8 +28,14 @@ class Main(object):
         connectionManager.add(ircbot)
         connectionManager.mainloop()
 
+    def parse(self, args):
+        if len(args) == 2:
+            if args[1] == "local":
+                return self.test_uno()
+        self.run_bot()
+
 
 if __name__ == "__main__":
+    import sys # for args
     m = Main()
-    # m.test_uno()
-    m.run_bot()
+    m.parse(sys.args)
